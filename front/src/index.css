@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+FR+Moderne:wght@100..400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  font-family: "Playwrite FR Moderne", cursive;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+/* @import url('https://fonts.googleapis.com/css2?family=Playwrite+FR+Moderne:wght@100..400&display=swap');
+/* @import "tailwindcss"; */
+
+
+/* 
+ *{
+  font-family: "Playwrite FR Moderne", cursive;
+}
+
+::-webkit-scrollbar {
+  display: none;
+} */ 
