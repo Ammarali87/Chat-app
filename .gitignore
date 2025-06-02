@@ -1,2 +1,10 @@
 # Ignore node_modules folders
-**/node_modules/
+**/node_modules/ 
+
+#  HOW TO FIX GIT PROBLEM 
+# how to  remove  node_modules 
+# MAKE .gitingnore file
+# in terminal ; 
+# git rm -r --cached . 
+# git add .
+# git commit -m "Initial commit - ignore node_modules"
