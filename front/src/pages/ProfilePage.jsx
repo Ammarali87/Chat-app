@@ -11,7 +11,7 @@ export default function ProfilePage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ name, bio, selectedImg });
-    navigate("/");
+    navigate("/");  
   };
 
   return (
