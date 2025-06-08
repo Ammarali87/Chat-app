@@ -5,6 +5,9 @@ const generateToken = (userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET);
   return token;
 };
+
+
+
 //  add async also await to find
 // add hashPassword
 export const signup = async (req, res, next) => {
@@ -76,3 +79,40 @@ export const login = async (req, res, next) => {
     console.error("error", error);
   }
 };
+
+ // log user:req.user 
+export const cehckAuth = async (req,res) => {
+ res.status(200).json({success:true, message:" Auth successfully" ,user:req.user})  
+}
+
+export const logout = (req,res)=>{
+
+}
+
+  //  any stuff in try  
+export const updateProfile = async (req,res) => {
+  try {
+  const { fullName, profilePic, bio } = req.body;
+  const userId = req.user._id 
+   let updateUser;
+   if(!profilePic){
+    updateUser = await User.findByIdAndUpdate(userId,{ fullName,bio ,profilePic:upload
+    },{new:true})
+   
+   }else{  // do not update the email  because i hate findone({})
+    const upload = await cloudarny.uploader.upload(profilePic);
+    updateUser = await User.findByIdAndUpdate(userId,{
+      fullName,bio ,profilePic:upload
+    },
+      {new:true})
+   }
+ res.status(201).json({
+        status:"success",
+        message: "User created successfully",
+        user: updateUser,
+      });
+  }catch(error){
+    console.error("Error in updateProfile", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
