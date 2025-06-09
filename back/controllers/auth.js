@@ -14,7 +14,7 @@ import User from "../models/user.model.js"; // عدّل حسب مسار ملف �
 
     //  const decoded = jwt.verify  read with protect 
     //  const decoded = jwt.decode  just read no  حماية 
-export const protect = async (req, res, next) => {
+export const protectRoute = async (req, res, next) => {
   try {
     let token;
 

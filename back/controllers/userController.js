@@ -102,7 +102,7 @@ export const updateProfile = async (req,res) => {
    }else{  // do not update the email  because i hate findone({})
     const upload = await cloudarny.uploader.upload(profilePic);
     updateUser = await User.findByIdAndUpdate(userId,{
-      fullName,bio ,profilePic:upload
+      fullName,bio ,profilePic:upload.secure_url
     },
       {new:true})
    }
