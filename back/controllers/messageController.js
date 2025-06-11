@@ -1,5 +1,6 @@
 import Message from "../models/Message"
 import {uploader} from "../middleware/upload"
+import {io , userSocketMap} from "../server"
 
 //  ما تلخبط بين  مكان  USER._ID userId
 //    { بدون  { userId}  it's one not many data to {}
@@ -60,7 +61,7 @@ export const markMessageAsSeen  = async (req,res) => {
 }
 
 
-export const sendMessagess  = async (req,res) => {
+export const sendMessage  = async (req,res) => {
     try {
       const {text , image} = req.body ; 
      const receiverId = req.params.id;  
@@ -75,6 +76,10 @@ export const sendMessagess  = async (req,res) => {
       senderId,receiverId,text,image:imageUrl
     })
 
+    const receiverSocketId = userSocketMap[receiverId];
+    if(receiverSocketId){
+      io.to(receiverSocketId).emit("newMessage",newMessage)
+    }
             res.json({success:"true",newMessage})
 
     } catch (error) {

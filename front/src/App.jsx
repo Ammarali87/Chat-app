@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SignupPage from "./pages/SignupPage";
+import { Toaster } from "react-hot-toast";
  
 export default function App() {
   return (
@@ -15,6 +16,9 @@ export default function App() {
     <div className="flex  flex-1 flex-col gap-3 items-center 
     justify-center h-screen bg-blue-500 text-white
      bg-[url('./public/bgImage.svg')] bg-cover ">  
+     
+     <Toaster/>
+     
       <Routes>
         <Route index={true} element={<HomePage/>}/>
         <Route path="/signup" element={<SignupPage/>}/>
