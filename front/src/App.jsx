@@ -19,14 +19,36 @@ export default function App() {
      
      <Toaster/>
      
-      <Routes>
+    <Routes>
+        <Route index={true} element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/signup" element={<SignupPage/>}/>
+        <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+            }
+         />
+      </Routes>
+
+      {/* <Routes>
         <Route index={true} element={<HomePage/>}/>
         <Route path="/signup" element={<SignupPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/profile" element={<ProfilePage/>}/>
-      </Routes>
+      </Routes> */}
     </div>  
      <Footer/>
      </div>
   );
 }
+
+
+
+
+      

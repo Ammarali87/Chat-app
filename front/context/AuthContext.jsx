@@ -28,11 +28,44 @@ export const AuthContext = createContext();
    
     const updatProfile = async (body) => {
       try {
-        
+        const {data} = axios.put(`/api/auth/update-profile`,body);
+        if(data.success){
+          setAuthUser(data.user);
+          toast.success("Profile updated successfully")
+        }
       } catch (error) {
         toast.error(error.message)
       }
     }
+
+    const login = async (state,credential) => {
+      try {
+        const {data} = axios.post(`/api/auth/${state}`,credential)
+      if(data.success){
+          setAuthUser(data.userData);
+          connectSocket(data.userData)
+          setToken(data.token);
+          axios.defaults.headers.common["token"] = data.token;
+          localStorage.setItem("token", data.token)
+          toast.success("Profile updated successfully")
+        }else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
+    
+    }
+    const logout = async () => {
+          setAuthUser(null);
+          setToken(null);
+          axios.defaults.headers.common["token"] = null;
+          localStorage.removeItem("token");
+          setOnlineUsers([]);
+          socket.disconnect();
+          toast.success("Logout successfully")
+        }
+
     const checkAuth = async()=>{
       try {
         const {date} = axios.get(`/api/auth/checkauth`)
@@ -55,6 +88,10 @@ export const AuthContext = createContext();
       })
       newSocket.connect;
       setSocket(newSocket)
+      
+      newSocket.on("getOnlineUsers",(userIds)=>{
+       setOnlineUsers(userIds)  
+      })
     }
 
     useEffect(()=>{
