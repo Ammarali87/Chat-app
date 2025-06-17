@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState , useContext } from "react";
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import assets from "../../public/assets";
 
 export default function SignupPage() {
@@ -8,10 +10,25 @@ export default function SignupPage() {
   const [bio, setBio] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setIsDataSubmitted(true);
+  //   console.log({ fullName, email, password, bio });
+  // };
+
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    await login('signup', {
+      fullName,
+      email,
+      password,
+      bio
+    });
     setIsDataSubmitted(true);
-    console.log({ fullName, email, password, bio });
+    navigate('/');
   };
 
   return (

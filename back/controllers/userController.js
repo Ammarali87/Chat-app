@@ -62,29 +62,88 @@ export const signup = async (req, res, next) => {
 //   findOne need to {} findOne({})
 // check email by findOne
 //  check password by bcrypt.compare
+ 
+
 
 export const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        
-        const userData = await User.findOne({ email });
-        if (!userData) return res.status(400).json({ message: "Invalid email or password" });
-        
-        const isCorrectPassword = await bcrypt.compare(password, userData.password);
-        if (!isCorrectPassword) return res.status(400).json({ message: "Invalid email or password" });
+  try {
+    const { email, password } = req.body;
 
-        const token = generateToken(userData._id);
-
-        res.status(200).json({  // Changed from 201 to 200
-            message: "Login successful",
-            user: userData,  // Changed from newUser to userData
-            token: token,
-        });
-    } catch (error) {
-        console.error("Error in login", error);
-        res.status(500).json({ message: "Internal server error" });  // Added proper error handling
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide email and password"
+      });
     }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+
+    // Remove password from response
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
+    res.status(200).json({
+      success: true,
+      user: userWithoutPassword,
+      token
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
 };
+
+
+
+
+ // this work good in post man 
+// export const login = async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
+        
+//         const userData = await User.findOne({ email });
+//         if (!userData) return res.status(400).json({ message: "Invalid email or password" });
+        
+//         const isCorrectPassword = await bcrypt.compare(password, userData.password);
+//         if (!isCorrectPassword) return res.status(400).json({ message: "Invalid email or password" });
+
+//         const token = generateToken(userData._id);
+
+//         res.status(200).json({  // Changed from 201 to 200
+//             message: "Login successful",
+//             user: userData,  // Changed from newUser to userData
+//             token: token,
+//         });
+//     } catch (error) {
+//         console.error("Error in login", error);
+//         res.status(500).json({ message: "Internal server error" });  // Added proper error handling
+//     }
+// };
+
+
+
+
+
 
 // export const login = async (req, res, next) => {
 //   try {

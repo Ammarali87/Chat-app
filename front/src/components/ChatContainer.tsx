@@ -1,12 +1,42 @@
-
-
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import assets, { userDummyData } from "../../public/assets";
 import { formatMassageTime } from "../lib/utils";
 
-export default function ChatContainer({ setSelectedUser, selectedUser }) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+interface Message {
+  _id: string;
+  senderId: string;
+  text?: string;
+  image?: string;
+  createdAt: string;
+}
+
+interface ChatContainerProps {
+  selectedUser: any; // Replace with proper user type
+  setSelectedUser: (user: any) => void;
+}
+
+export default function ChatContainer({ setSelectedUser, selectedUser }: ChatContainerProps) {
+ 
+ 
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const handleSendMessage = () => {
+    if (!message.trim()) return;
+    // Add message handling logic here
+    setMessage("");
+  };
+
+ 
+ 
+ 
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -116,6 +146,17 @@ export default function ChatContainer({ setSelectedUser, selectedUser }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
