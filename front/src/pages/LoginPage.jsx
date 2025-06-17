@@ -126,9 +126,10 @@
 
 
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import assets from "../../public/assets";
 
+import { AuthContext } from '../../context/AuthContext';
 export default function LoginPage() {
   const [currState, setCurrState] = useState("Login");
   const [fullName, setFullName] = useState("");
@@ -137,11 +138,17 @@ export default function LoginPage() {
   const [bio, setBio] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
+  const {login} = useContext(AuthContext)
+
+
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsDataSubmitted(true);
     // Handle form data here
     console.log({ fullName, email, password, bio });
+    login("Sign up"? "signup":"login",{fullName,email,bio,password})
   };
 
   return (
@@ -165,7 +172,8 @@ export default function LoginPage() {
             alt="arrow"
             className="w-5 cursor-pointer"
             onClick={() =>
-              setCurrState(currState === "Login" ? "Sign up" : "Login")
+              setCurrState
+              (currState === "Login" ? "Sign up" : "Login")
             }
           />
         </h2>
@@ -226,11 +234,13 @@ export default function LoginPage() {
 
         <div className="flex items-center text-sm text-gray-400 gap-2 cursor-pointer">
           {currState === "Sign up" ? (
-            <p onClick={() => { setCurrState("Login") , setIsDataSubmitted(false)}}>
+            <p onClick={() => { setCurrState("Login") ,
+             setIsDataSubmitted(false)}}>
               Already have an account? <span className="text-blue-400">Login here</span>
             </p>
           ) : (
-            <p onClick={() =>{ setCurrState("Sign up"), setIsDataSubmitted(false)}}>
+            <p onClick={() =>{ setCurrState("Sign up"), 
+            setIsDataSubmitted(false)}}>
               Create new account? <span className="text-blue-400">Click here</span>
             </p>
           )}

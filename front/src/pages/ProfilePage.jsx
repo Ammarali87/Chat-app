@@ -1,12 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import assets from "../../public/assets";
+import { AuthContext } from '../../context/AuthContext';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [selectedImg, setSelectedImg] = useState(null);
+
+  const {authUser,updateProfile} = useContext(AuthContext)
+
 
   const handleSubmit = (e) => {
     e.preventDefault();

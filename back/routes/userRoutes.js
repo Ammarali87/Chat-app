@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { signup, login, updateProfile, cehckAuth } from '../controllers/userController.js';
-import { protectRoute } from '../controllers/auth.js'; 
-   //  import {} not import fileName
-const route = Router();
+import { signup, login, updateProfile, checkAuth } from '../controllers/userController.js';
+import { protectRoute } from '../controllers/auth.js';
+
+const router = Router();
 
 // Public routes
-route.post("/signup", signup);   
-route.post("/login", login);
+router.post("/signup", signup);
+router.post("/login", login);
 
 // Protected routes
-route.use(protectRoute); 
-route.put("/update-profile", updateProfile);   
-route.get("/checkauth", cehckAuth);
+router.use(protectRoute);
+router.put("/update-profile", updateProfile);
+router.get("/checkauth", checkAuth);
 
-export default route;
+export default router;

@@ -1,11 +1,7 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.model.js"; // عدّل حسب مسار ملف المستخدم
+import User from "../models/User.js"; // عدّل حسب مسار ملف المستخدم
+//  add .js to file 
 
-
-
-//  1000 EU
-//  1500 EU X2 3000 EU X12 36,000 X3 100,000 
-//    3 years to make 100K  
 
 //  req.headers.authorization &&
     //   req.headers.authorization.startsWith("Bearer")

@@ -1,5 +1,10 @@
-import User from "../models/User";
-
+import User from "../models/User.js"  
+import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken';  // Add this import
+import cloudinary from "../config/cloudinary.js";  // Updated from cloudarny.js
+  // in update test in postman make profile img in comment
+  
+  
 //   كل فنكشن تريترن حاجة لازم
 const generateToken = (userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET);
@@ -26,12 +31,12 @@ export const signup = async (req, res, next) => {
         .json({ message: "User already exists with this email" });
 
     const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hashPassword(password, salt);
+    const hashPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
       fullName,
       email,
-      hashPassword,
+      password:hashPassword,
       profilePic,
       bio,
     }); // error  add password directly in create must add hashed
@@ -57,62 +62,146 @@ export const signup = async (req, res, next) => {
 //   findOne need to {} findOne({})
 // check email by findOne
 //  check password by bcrypt.compare
-export const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const userData = await User.findOne({ email });
-    if (!userData) return res.status(400).json({ message: "error" });
-   
-    const isCorrectPassword = await bcrypt.compare(password, userData.password);
-    if (!isCorrectPassword) return res.status(400).json({ message: "error" });
 
-    const token = generateToken(userData._id);
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        const userData = await User.findOne({ email });
+        if (!userData) return res.status(400).json({ message: "Invalid email or password" });
+        
+        const isCorrectPassword = await bcrypt.compare(password, userData.password);
+        if (!isCorrectPassword) return res.status(400).json({ message: "Invalid email or password" });
 
-    res
-      .status(201)
-      .json({
-        message: "User created successfully",
-        user: newUser,
-        token: token,
-      });
-  } catch (error) {
-    console.error("error", error);
-  }
+        const token = generateToken(userData._id);
+
+        res.status(200).json({  // Changed from 201 to 200
+            message: "Login successful",
+            user: userData,  // Changed from newUser to userData
+            token: token,
+        });
+    } catch (error) {
+        console.error("Error in login", error);
+        res.status(500).json({ message: "Internal server error" });  // Added proper error handling
+    }
 };
 
+// export const login = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     const userData = await User.findOne({ email });
+//     if (!userData) return res.status(400).json({ message: "error" });
+   
+//     const isCorrectPassword = await bcrypt.compare(password, userData.password);
+//     if (!isCorrectPassword) return res.status(400).json({ message: "error" });
+
+//     const token = generateToken(userData._id);
+
+//     res
+//       .status(201)
+//       .json({
+//         message: "User created successfully",
+//         user: newUser,
+//         token: token,
+//       });
+//   } catch (error) {
+//     console.error("error", error);
+//   }
+// };
+
  // log user:req.user 
-export const cehckAuth = async (req,res) => {
- res.status(200).json({success:true, message:" Auth successfully" ,user:req.user})  
-}
+
+export const checkAuth = async (req, res) => {  // Changed from cehckAuth to checkAuth
+    res.status(200).json({
+        success: true,
+        message: "Auth successful",
+        user: req.user
+    }); 
+};
+
 
 export const logout = (req,res)=>{
 
 }
 
   //  any stuff in try  
-export const updateProfile = async (req,res) => {
-  try {
-  const { fullName, profilePic, bio } = req.body;
-  const userId = req.user._id 
-   let updateUser;
-   if(!profilePic){
-    updateUser = await User.findByIdAndUpdate(userId,{ fullName,bio ,profilePic:upload
-    },{new:true})
+// export const updateProfile = async (req,res) => {
+//   try {
+//   const { fullName, profilePic, bio } = req.body;
+//   const userId = req.user._id 
+//    let updateUser;
+//    if(!profilePic){
+//     updateUser = await User.findByIdAndUpdate(userId,{ fullName,bio ,profilePic:upload
+//     },{new:true})
    
-   }else{  // do not update the email  because i hate findone({})
-    const upload = await cloudarny.uploader.upload(profilePic);
-    updateUser = await User.findByIdAndUpdate(userId,{
-      fullName,bio ,profilePic:upload.secure_url
-    },
-      {new:true})
-   }
- res.status(201).json({
-        status:"success",
-        message: "User created successfully",
-        user: updateUser,
-      });
-  }catch(error){
-    console.error("Error in updateProfile", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-}
+//    }else{  // do not update the email  because i hate findone({})
+//     const upload = await cloudarny.uploader.upload(profilePic);
+//     updateUser = await User.findByIdAndUpdate(userId,{
+//       fullName,bio ,profilePic:upload.secure_url
+//     },
+//       {new:true})
+//    }
+//  res.status(201).json({
+//         status:"success",
+//         message: "User created successfully",
+//         user: updateUser,
+//       });
+//   }catch(error){
+//     console.error("Error in updateProfile", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// } 
+
+export const updateProfile = async (req, res) => {
+    try {
+        const { fullName, profilePic, bio } = req.body;
+        const userId = req.user._id;
+        
+        let updateUser;
+        if (!profilePic) {
+            updateUser = await User.findByIdAndUpdate(
+                userId,
+                { 
+                    fullName,
+                    bio 
+                },
+                { new: true }
+            );
+        } else {
+            try {
+                // Upload image to cloudinary
+                const uploadResult = await cloudinary.uploader.upload(profilePic, {
+                    folder: "chat-app-profiles",
+                });
+                
+                updateUser = await User.findByIdAndUpdate(
+                    userId,
+                    {
+                        fullName,
+                        bio,
+                        profilePic: uploadResult.secure_url
+                    },
+                    { new: true }
+                );
+            } catch (uploadError) {
+              console.log(`API KEY ` , 
+  process.env.CLOUDINARY_CLOUD_NAME, 
+  process.env.CLOUDINARY_API_KEY,
+     process.env.CLOUDINARY_API_SECRET
+                
+              )
+                console.error("Cloudinary upload error:", uploadError);
+                return res.status(400).json({ message: "Image upload failed" });
+            }
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: "Profile updated successfully",
+            user: updateUser,
+        });
+    } catch (error) {
+        console.error("Error in updateProfile:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
