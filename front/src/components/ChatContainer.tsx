@@ -1,41 +1,70 @@
-import { useEffect, useRef, useState } from "react";
-import assets, { userDummyData } from "../../public/assets";
+import { useContext, useEffect, useRef, useState } from "react";
+import assets from "../../public/assets";
 import { formatMassageTime } from "../lib/utils";
+import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import toast from "react-hot-toast";
 
-interface Message {
-  _id: string;
-  senderId: string;
-  text?: string;
-  image?: string;
-  createdAt: string;
-}
+// interface Message {
+//   _id: string;
+//   senderId: string;
+//   text?: string;
+//   image?: string;
+//   createdAt: string;
+// }
 
-interface ChatContainerProps {
-  selectedUser: any; // Replace with proper user type
-  setSelectedUser: (user: any) => void;
-}
+// interface ChatContainerProps {
+//   selectedUser: any; // Replace with proper user type
+//   setSelectedUser: (user: any) => void;
+// }
 
-export default function ChatContainer({ setSelectedUser, selectedUser }: ChatContainerProps) {
+export default function ChatContainer() {
  
  
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [message, setMessage] = useState(""); // if text ("")
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [input , setInput ] = useState<string>(""); // ("")
+
+  // const {messages ,getMessages, selectedUser,sendMessage, setSelectedUser} =  useContext(AuthContext);
+  // const {authUser , onlineUsers} =  useContext(ChatContext);
+
+  const { messages, getMessages, selectedUsers, sendMessage, setSelectedUsers } = useContext(ChatContext);
+  const { authUser, onlineUsers } = useContext(AuthContext);
+  
+  useEffect(()=>{
+     if (selectedUsers) {
+       setMessage(selectedUsers._id)
+    }
+  },[selectedUsers])
+
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && messages) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
-    // Add message handling logic here
-    setMessage("");
+  const handleSendMessage = async (e:any) => {
+    e.preventDefault();
+    if (input.trim() === "") return;
+    await sendMessage({text: input.trim()})  // create text :input.trim()
+    setInput("");
   };
 
- 
- 
+   const handelSendImage = async(e)=>{
+     const file = e.target.files[0];
+     if(!file || !file.type.startsWith("image/")){
+       toast.error("Error Send message")
+       return;
+      }
+      const reader = new FileReader()
+
+      reader.onloadend = async () => {
+      await sendMessage({image:reader.result})
+       e.target.value = ""
+    }
+      reader.readAsDataURL(file)
+    } 
  
 
   useEffect(() => {
@@ -44,29 +73,32 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
     }
   }, []);
 
-  return selectedUser ? (
+  return selectedUsers ? (
     <div className="h-full overflow-scroll relative backdrop-blur-lg">
       {/* ------ Header ------ */}
       <div className="flex items-center gap-3 py-3 mx-4 border-b border-stone-500">
         <img
-          src={assets.profile_martin}
+          // src={assets.profile_martin}
+          src={ selectedUsers.profilePic || assets.profile_martin}
           alt="profile-img"
           className="rounded-full w-8"
         />
         <p className="flex items-center gap-2 text-white flex-1 text-lg">
-          Martin Johnson
-          <span className="w-2 h-2 rounded-full bg-green-400"></span>
+         {selectedUsers.fullName}
+         {onlineUsers.includes(selectedUsers._id) && (
+            <span className="w-2 h-2 rounded-full bg-green-400"></span>
+          )}
         </p>
 
         <img
           src={assets.arrow_icon}
-          onClick={() => setSelectedUser(null)}
+          onClick={() => setSelectedUsers(null)}
           alt=""
           className="md:hidden max-w-7"
         />
         <img
           src={assets.help_icon}
-          onClick={() => setSelectedUser(null)}
+          onClick={() => setSelectedUsers(null)}
           alt=""
           className="max-md:hidden max-w-5"
         />
@@ -74,11 +106,11 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
 
       {/* ------ Chat Area ------ */}
       <div className="overflow-y-scroll p-3 pb-6 flex flex-col h-[calc(100%-120px)]">
-        {userDummyData.map((msg, index) => (
+        {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex items-end gap-2 ${
-              msg.senderId !== "680f50aaf10f3cd28382ecf2"
+              msg.senderId !== authUser._id
                 ? "justify-start flex-row-reverse"
                 : "justify-end"
             }`}
@@ -92,7 +124,7 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
             ) : (
               <p
                 className={`p-2 md:text-sm font-light rounded-lg mb-8 bg-violet-500/30 text-white max-w-[200px] ${
-                  msg.senderId !== "680f50aaf10f3cd28382ecf2"
+                  msg.senderId !== authUser._id
                     ? "rounded-br-none"
                     : "rounded-bl-none"
                 }`}
@@ -105,9 +137,10 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
               <img
                 className="rounded-full w-7"
                 src={
-                  msg.senderId !== "680f50aaf10f3cd28382ecf2"
-                    ? assets.avatar_icon
-                    : assets.profile_martin
+                  msg.senderId !== authUser._id
+                    ? authUser?.profilePic 
+                      || assets.avatar_icon 
+                    : selectedUsers.profilePic || assets.avatar_icon
                 }
                 alt=""
               />
@@ -123,20 +156,27 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
         <div className="flex-1 flex items-center bg-gray-100/12 rounded-full px-3">
           <input
             type="text"
+            onChange={(e)=> setInput(e.target.value)}
+              onKeyDown={(e) => {
+              if (e.key === "Enter") handleSendMessage(e);
+            }}
             placeholder="Send a message"
             className="outline-none rounded-lg border-none flex-1 p-3 text-sm text-white placeholder-gray-400"
           />
-          <input type="file" id="image" accept="image/png, image/jpeg" hidden />
+          <input type="file"
+          onChange={handelSendImage}
+          id="image" accept="image/png, image/jpeg" hidden />
           <label htmlFor="image">
             <img
               src={assets.gallery_icon}
+              onClick={handleSendMessage}
               alt=""
               className="w-3 mr-2 cursor-pointer"
             />
           </label>
         </div>
 
-        <img src={assets.send_button} alt="" className="w-7 cursor-pointer" />
+        <img src={assets.send_button} onClick={handleSendMessage} alt="" className="w-7 cursor-pointer" />
       </div>
     </div>
   ) : (
@@ -166,7 +206,7 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
 // import {formatMassageTime} from "../lib/utils"
 
 // export default function 
-// ChatContainer({setSelectedUser,selectedUser}) {
+// ChatContainer({setSelectedUsers,selectedUsers}) {
  
 //   const scrollRef = useRef<HTMLDivElement | null>(null);
 //   useEffect(()=>{  
@@ -175,7 +215,7 @@ export default function ChatContainer({ setSelectedUser, selectedUser }: ChatCon
 //     }
 //   },[])
  
-//   return (  selectedUser ?
+//   return (  selectedUsers ?
 //  ( <div className="h-full overflow-scroll relative backdrop-blur-lg ">
 //    {/* {     ------  header ------ } */}
 //     <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>

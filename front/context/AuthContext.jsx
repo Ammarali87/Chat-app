@@ -31,7 +31,7 @@ axios.defaults.baseURL = backendUrl;
           return Promise.reject(error);
         }
       );
-
+  
 
 export const AuthContext = createContext();
 

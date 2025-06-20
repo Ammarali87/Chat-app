@@ -1,7 +1,9 @@
 import User from "../models/User.js"  
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken';  // Add this import
-import cloudinary from "../config/cloudinary.js";  // Updated from cloudarny.js
+import cloudinary from "../config/cloudinary.js"; 
+// import upload from "../middleware/upload.js"; 
+ // Updated from cloudarny.js
   // in update test in postman make profile img in comment
   
   

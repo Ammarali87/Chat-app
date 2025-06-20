@@ -70,12 +70,11 @@ export default function HomePage() {
         overflow-hidden h-full border-gray-600 grid grid-cols-1 rounded-2xl 
         ${selectedUser ? 'md:grid-cols-[1fr_1.5fr_1fr] xl:grid-cols-[1fr_2fr_1fr]' 
         : 'md:grid-cols-2'}`}>
-        <Sidebar setSelectedUser={setSelectedUser} />
-        <ChatContainer
-          selectedUser={selectedUser}
+        <Sidebar />
+        <ChatContainer  />
+        <LeftSidebar selectedUser={selectedUser}
           setSelectedUser={setSelectedUser}
-        />
-        <LeftSidebar selectedUser={selectedUser} />
+         />
       </div>
     </div>
   );
