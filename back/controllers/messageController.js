@@ -48,7 +48,7 @@ export const getUsersForSidebar = async (req, res) => {
 
         await Promise.all(promises);
         res.json({
-            message: "success",
+            success: true,
             users: filteredUsers,
             unseenMessages
         });
@@ -77,7 +77,8 @@ export const getMessages = async (req,res) => {
       ] 
     })
 
-      res.json({message:"success" ,messages})
+      res.json({success:true ,messages})
+
     } catch (error) {
         console.error(error.message);
       res.json({message:"faild" , error: error.message})
@@ -90,7 +91,7 @@ export const markMessageAsSeen  = async (req,res) => {
     try {
           const {id} = req.params;
           await Message.findByIdAndUpdate(id,{seen:true})
-            res.json({success:"true"})
+            res.json({success:true})
 
     } catch (error) {
         console.error(error.message);
@@ -162,7 +163,7 @@ export const sendMessage  = async (req,res) => {
     if(receiverSocketId){
       io.to(receiverSocketId).emit("newMessage",newMessage)
     }
-            res.json({success:"true",newMessage})
+            res.json({success:true,newMessage})
 
     } catch (error) {
         console.error(error.message);

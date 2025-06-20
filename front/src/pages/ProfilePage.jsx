@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import assets from "../../public/assets";
 import { AuthContext } from '../../context/AuthContext';
 
@@ -11,7 +11,9 @@ export default function ProfilePage() {
 
   const {authUser,updateProfile} = useContext(AuthContext)
 
+  // Uncaught (in promise) The message port closed before a response was received.
 
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ name, bio, selectedImg });

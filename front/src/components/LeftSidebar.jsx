@@ -1,6 +1,6 @@
 // import assets, { imagesDummyData } from '../../public/assets';
 
-// export default function LeftSidebar({ selectedUser, setSlectedUser }) {
+// export default function LeftSidebar({ selectedUsers, setSlectedUser }) {
 //
 
 //         {/* Logout Button */}
@@ -78,36 +78,38 @@
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import assets, { imagesDummyData } from '../../public/assets';
-
-export default function LeftSidebar({ selectedUser }) {
+import { ChatContext } from '../../context/ChatContext';
+ 
+//  start with userDummyData then use axios and fetch 
+export default function LeftSidebar() {
   const { logout } = useContext(AuthContext);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
-  return selectedUser ? (
+ 
+    const {
+       selectedUsers, // ✅ تأكد إن دي array أو object حسب نوعها
+       setSelectedUsers,
+       unseenMessages,
+       setUnseenMessages,
+     } = useContext(ChatContext);
+   
+   
+  return selectedUsers ? (
          <div
         className={`w-full relative overflow-y-scroll bg-[#8185B2]/10 text-white ${
-          selectedUser ? 'max-md:hidden' : ''
+          selectedUsers ? 'max-md:hidden' : ''
         }`}
       >
                  {/* Top User Info */}
        <div className="pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto">
            <img
-             src={selectedUser?.profilePic || assets.avatar_icon}
+             src={selectedUsers?.profilePic || assets.avatar_icon}
             alt=""
             className="rounded-full aspect-[1/1] w-20"
           />
           <h1 className="text-xl font-medium mx-auto flex items-center px-10 gap-2">
             <p className="w-2 h-2 rounded-full bg-green-400"></p>
-            {selectedUser?.name}
+            {selectedUsers?.name}
           </h1>
-          <p className="px-10 mx-auto">{selectedUser?.bio}</p>
+          <p className="px-10 mx-auto">{selectedUsers?.bio}</p>
         </div>
 
         <hr className="my-4 border-[#ffffff50]" />
@@ -131,7 +133,7 @@ export default function LeftSidebar({ selectedUser }) {
 
 
       <button
-        onClick={handleLogout}
+        onClick={()=> logout()}
         className="absolute left-1/2 bottom-5 -translate-x-1/2 px-4 py-2 rounded text-sm text-white bg-gradient-to-r from-purple-400 to-violet-600 hover:opacity-80"
       >
         Logout

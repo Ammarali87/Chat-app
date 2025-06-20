@@ -160,7 +160,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    updateProfile
+    updateProfile,
+    axios // you forget this, error was Cannot read undefined (reading 'get')
   };
 
   return (

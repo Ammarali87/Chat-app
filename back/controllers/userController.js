@@ -182,7 +182,7 @@ export const checkAuth = async (req, res) => {  // Changed from cehckAuth to che
 
 
 export const logout = (req,res)=>{
-
+ // optional
 }
 
   //  any stuff in try  
@@ -257,7 +257,7 @@ export const updateProfile = async (req, res) => {
         }
 
         res.status(200).json({
-            status: "success",
+            success: true,
             message: "Profile updated successfully",
             user: updateUser,
         });

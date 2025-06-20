@@ -37,7 +37,8 @@ export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
    
-  const [users, setUsers] = useState(null);
+  // const [users, setUsers] = useState(userDummyData); to test add Dummy
+  const [users, setUsers] = useState(null);  // null with data 
   const [selectedUsers, setSelectedUsers] = useState(null); // True or False add null
   const [messages, setMessages] = useState([]);
   const [unseenMessages, setUnseenMessages] = useState({});
@@ -59,7 +60,19 @@ export const ChatProvider = ({ children }) => {
     }
   }; 
 
-  const getUsers = async () => {
+  // const getUsers = async () => {
+  //   try {
+  //     const {data} = await axios.get(`/api/messages/users`)
+  //     if (data.success) {
+  //       setUsers(data.users)
+  //       setUnseenMessages(data.unseenMessages)
+  //     }   
+  //   } catch (error) {
+  //      toast.error(error.message)
+  //   }
+  // }
+
+    const getUsers = async () => {
     try {
       const {data} = await axios.get(`/api/messages/users`)
       if (data.success) {
@@ -67,10 +80,9 @@ export const ChatProvider = ({ children }) => {
         setUnseenMessages(data.unseenMessages)
       }   
     } catch (error) {
-       toast.error(error.message)
+      toast.error(error.message)
     }
   }
-
         // Must add await with axios and async 
         // if post add else toat.error
         // from backend setMessages(data.newMessage) but add prevmessages
