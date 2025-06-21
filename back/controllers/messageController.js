@@ -1,6 +1,6 @@
 import Message from "../models/Message.js"
 import upload from "../middleware/upload.js"
-import {io , userSocketMap} from "../server.js"
+// import {io , userSocketMap} from "../server.js"
 import User from "../models/User.js"; 
 import cloudinary from "../config/cloudinary.js";
 
