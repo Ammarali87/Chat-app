@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState ,useContext} from "react";
 import assets from "../../public/assets";
 import { AuthContext } from '../../context/AuthContext';
+import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -16,7 +17,14 @@ export default function ProfilePage() {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ name, bio, selectedImg });
+    updateProfile({ name, bio, selectedImg })
+      .then(() => {
+        toast.success("Profile updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        toast.error("Failed to update profile. Please try again.");
+      });
     navigate("/");  
   };
 
