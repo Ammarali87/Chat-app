@@ -27,7 +27,7 @@ export default function Sidebar() {
   ) || [];
 
   return (
-    <div className="h-full w-44 bg-white/10 backdrop-blur-lg text-sm text-white flex flex-col">
+    <div className="h-full w-60 bg-white/10 backdrop-blur-lg text-sm text-white flex flex-col">
       {/* Top Bar */}
       <div className="p-3 flex items-center gap-2 border-b border-white/20">
         <div className="flex-1 flex items-center gap-2 bg-white/10 rounded-full px-2 py-1">
