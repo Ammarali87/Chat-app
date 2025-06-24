@@ -10,11 +10,6 @@ export default function SignupPage() {
   const [bio, setBio] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   setIsDataSubmitted(true);
-  //   console.log({ fullName, email, password, bio });
-  // };
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();

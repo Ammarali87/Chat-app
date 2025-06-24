@@ -1,0 +1,10 @@
+{
+  "name": "chat-app-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix back\" \"npm run dev --prefix front\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

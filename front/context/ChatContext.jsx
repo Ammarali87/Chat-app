@@ -60,19 +60,8 @@ export const ChatProvider = ({ children }) => {
     }
   }; 
 
-  // const getUsers = async () => {
-  //   try {
-  //     const {data} = await axios.get(`/api/messages/users`)
-  //     if (data.success) {
-  //       setUsers(data.users)
-  //       setUnseenMessages(data.unseenMessages)
-  //     }   
-  //   } catch (error) {
-  //      toast.error(error.message)
-  //   }
-  // }
 
-    const getUsers = async () => {
+  const getUsers = async () => {
     try {
       const {data} = await axios.get(`/api/messages/users`)
       if (data.success) {
